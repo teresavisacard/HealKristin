@@ -74,7 +74,14 @@ int process_quests(const char *qfile) {
     }
 
     Graph g* = load_map(g);
-    load_position(g);
+
+    if(g == NULL) {
+        return 0;
+    }
+
+    if (!load_position(g)) {
+        return 0;
+    }
 
     while (fscanf(qfile, "Task %d", &number) == 1) {
         arg = 0;

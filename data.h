@@ -1,5 +1,5 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef DATA_H
+#define DATA_H
 
 typedef struct {
     int n_cities;
@@ -7,6 +7,6 @@ typedef struct {
     int n_clusters;
     int *id;
     int *sz;
-} Graph;
+} Clusters;
 
 #endif

@@ -12,10 +12,10 @@
 /**************************************************************
  * @brief Make each city its own cluster, setting its size to 1.
  * 
- * @param g 
+ * @param c
  * @param v 
  **************************************************************/
-void make_set(Graph *g, int a) {
+void make_set(Graph *c, int a) {
     g->id[a] = a;
     g->sz[a] = 1;
 }
@@ -23,11 +23,11 @@ void make_set(Graph *g, int a) {
 /**************************************************************
  * @brief 
  * 
- * @param g 
+ * @param c
  * @param a 
  * @return int - root of city
  **************************************************************/
-int find_root(Graph *g, int a) {
+int find_root(Clusters *c, int a) {
     int i;
     for (i = a; i != id[i]; i = id[i]);
 
@@ -37,12 +37,14 @@ int find_root(Graph *g, int a) {
 /**************************************************************
  * @brief 
  * 
- * @param g 
+ * @param c 
  * @param a 
  * @param b 
  * @return int 
  **************************************************************/
-int weighted_union(Graph *g, int a, int b) {
+int weighted_union(Clusters *c, int a, int b) {
+    c->n_cities--;
+    
     if (sz[a] < sz[b]) {
         id[a] = b;
         sz[b] += sz[a];
@@ -52,32 +54,45 @@ int weighted_union(Graph *g, int a, int b) {
     }
 }
 
-void compress(Graph *g, int a) {
-    int i, c, t;
+/**************************************************************
+ * @brief 
+ * 
+ * @param c 
+ * @param a 
+ **************************************************************/
+void compress(Clusters *c, int a, int ra) {
+    int i, c;
 
     for (i = a; i != id[i]; i = c) {
         c = id[i];
-        id[i] = t;
+        id[i] = ra;
     }
 }
 
-void compressed_weighted_quick_union(Graph *g, FILE *gfile) {
+/**************************************************************
+ * @brief 
+ * 
+ * @param c 
+ * @param gfile 
+ **************************************************************/
+void compressed_weighted_quick_union(Clusters *c, FILE *gfile) {
 
-   for (int i = 0; i < n_cities; i++) {
-      make_set(g, i);
-   }
 
-   while (fscanf(fp, "%d %d", &a, &b) == 2) {
-    int ra = find_root(g, a);
-    int rb = find_root(g, b);
-    
-    if (ra == rb) {
-        continue;
+    for (int i = 0; i < n_cities; i++) {
+      make_set(c, i);
     }
 
-    weighted_union(g, a, b);
+    while (fscanf(fp, "%d %d", &a, &b) == 2) {
+        int ra = find_root(c, a);
+        int rb = find_root(c, b);
+    
+        if (ra == rb) {
+            continue;
+        }
 
-    compress(g, a);
-    compress(g, b);
+        weighted_union(c, a, b);
+
+        compress(c, a, ra);
+        compress(c, b, rb);
     }
 }

@@ -8,45 +8,102 @@
  * 
  **************************************************************/
 
+// TODO: SEE ARGUMENT CHECKS!
+
 #include <stdio.h>
 
 #include "graph.h"
 #include "load.h"
 
-Graph *load_graph(const char *gfilename) {
-    FILE *gfile = fopen(gfilename, "r");
+/**************************************************************
+ * @brief 
+ * 
+ * @param gfilename 
+ * @return Graph* 
+ **************************************************************/
+Clusters *load_map(const char *mfilename) {
 
-    //! GUARDRAILS ! FILE VALIDATION !
-    if (!gfile) {
+    FILE *mfile = fopen(mfilename, "r");
+    if (!mfile) {
         return NULL;
     }
 
-    Graph *g = malloc(sizeof *g);
-
-    if (!g) {
-        fclose(gfile);
-        return NULL;
-    }
-    if (fscanf(gfile, "%d %d", &g->n_cities, &g->n_links) != 2) {
-        free(g);
-        fclose(gfile);
+    Clusters *c = malloc(sizeof *c);
+    if (!c) {
+        fclose(mfile);
         return NULL;
     }
 
-    g->id = malloc((g->n_cities + 1) * sizeof *g->id);
-    g->sz = malloc((g->n_cities + 1) * sizeof *g->sz);
+    if (fscanf(mfile, "%d %d", &c->n_cities, &c->n_links) != 2) {
+        free(c);
+        fclose(mfile);
+        return NULL;
+    }
+
+    c->id = malloc((c->n_cities + 1) * sizeof *c->id);
+    c->sz = malloc((c->n_cities + 1) * sizeof *c->sz);
     
-    g->x = NULL;
-    g->y = NULL;
+    c->x = NULL;
+    c->y = NULL;
 
-    if (!g->id || !g->sz) {
-        free_graph(g);
-        fclose(gfile);
+    if (!c->id || !c->sz) {
+        free_clusters(c);
+        fclose(mfile);
         return NULL;
     }
 
-    g->n_clusters = g->n_cities;
-    compressed_weighted_quick_union(g, gfile);
-    fclose(gfile);
-    return g;
+    c->n_clusters = c->n_cities;
+    compressed_weighted_quick_union(c, mfile);
+
+    fclose(mfile);
+    return c;
+}
+
+/**************************************************************
+ * @brief 
+ * 
+ * @param c 
+ * @param pfilename 
+ * @return int 
+ **************************************************************/
+int load_position(Clusters *c, const char *pfilename) {
+
+    FILE *pfile = fopen(pfilename, "r");
+    if (!pfile) {
+        return 1;
+    }
+
+    int max_x, max_y;
+
+    if (fscanf(pfile, "%d %d", &max_x, &max_y) != 2) {
+        fclose(pfile);
+        return 1;
+    }
+
+    c->x = calloc((size_t)c->n_cities + 1, sizeof *c->x);
+    c->y = calloc((size_t)c->n_cities + 1, sizeof *c->y);
+
+    if (!c->x || !c->y) {
+        fclose(pfile);
+        return 1;
+    }
+
+    int city, count = 0;
+    while (fscanf(pfile, "%d %d %d", &city, &c->x[city], &c->y[city]) == 3) {
+        
+        if (city > c->n_cities || cx > max_x || cy > max_y) {
+            fclose(mfile);
+            return 1;
+        }
+
+        count++;
+    }
+
+    fclose(pfile);
+
+    if (count != c->n_cities) {
+        return 0;
+    }
+
+    return 1;
 }
