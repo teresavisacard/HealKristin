@@ -12,51 +12,48 @@
 
 #include <stdio.h>
 
-#include "graph.h"
+#include "data.h"
 #include "load.h"
+
+Clusters *initialize_clusters() {
+    Clusters *c = malloc(sizeof *c);
+    if (!c) {
+        return NULL;
+    }
+
+    return c;
+}
+
+Dots *initialize_dots(Clusters *c) {
+    Dot *d = calloc((int)c->n_cities, sizeof *d);
+    if (!d) {
+        return NULL;
+    }
+
+    return d;
+}
 
 /**************************************************************
  * @brief 
  * 
- * @param gfilename 
- * @return Graph* 
+ * @param mfilename 
+ * @return Clusters* 
  **************************************************************/
-Clusters *load_map(const char *mfilename) {
-
-    FILE *mfile = fopen(mfilename, "r");
-    if (!mfile) {
-        return NULL;
-    }
-
-    Clusters *c = malloc(sizeof *c);
-    if (!c) {
-        fclose(mfile);
-        return NULL;
-    }
-
+int *load_clusters(FILE *mfile) {
     if (fscanf(mfile, "%d %d", &c->n_cities, &c->n_links) != 2) {
         free(c);
-        fclose(mfile);
-        return NULL;
-    }
-
-    c->id = malloc((c->n_cities + 1) * sizeof *c->id);
-    c->sz = malloc((c->n_cities + 1) * sizeof *c->sz);
-    
-    c->x = NULL;
-    c->y = NULL;
-
-    if (!c->id || !c->sz) {
-        free_clusters(c);
-        fclose(mfile);
-        return NULL;
+        return 1;
     }
 
     c->n_clusters = c->n_cities;
-    compressed_weighted_quick_union(c, mfile);
+    return 0;
+}
 
+int *load_dots(FILE *mfile, Clusters *c, Dots **d) {
+    compressed_weighted_quick_union(c, d, mfile);
     fclose(mfile);
-    return c;
+
+    return 0;
 }
 
 /**************************************************************
@@ -66,44 +63,26 @@ Clusters *load_map(const char *mfilename) {
  * @param pfilename 
  * @return int 
  **************************************************************/
-int load_position(Clusters *c, const char *pfilename) {
-
-    FILE *pfile = fopen(pfilename, "r");
-    if (!pfile) {
-        return 1;
-    }
+int load_positions(FILE *pfile, Clusters *c, Dots **d) {
 
     int max_x, max_y;
 
     if (fscanf(pfile, "%d %d", &max_x, &max_y) != 2) {
-        fclose(pfile);
-        return 1;
-    }
-
-    c->x = calloc((size_t)c->n_cities + 1, sizeof *c->x);
-    c->y = calloc((size_t)c->n_cities + 1, sizeof *c->y);
-
-    if (!c->x || !c->y) {
-        fclose(pfile);
         return 1;
     }
 
     int city, count = 0;
-    while (fscanf(pfile, "%d %d %d", &city, &c->x[city], &c->y[city]) == 3) {
+    while (fscanf(pfile, "%d %d %d", &city, &d[city].x, &&d[city].y) == 3) {
         
         if (city > c->n_cities || cx > max_x || cy > max_y) {
-            fclose(mfile);
             return 1;
         }
-
         count++;
     }
 
-    fclose(pfile);
-
     if (count != c->n_cities) {
-        return 0;
+        return 1;
     }
 
-    return 1;
+    return 0;
 }

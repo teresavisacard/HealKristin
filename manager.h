@@ -14,7 +14,7 @@ const TaskEntry tasks[] = {
 };
 
 int validate_arguments(int argc, char *argv[]);
-char *make_rfile(const char *qfilename);
+ *make_rfile(const char *qfilename);
 int process_quests(const char *qfile);
 
 #endif

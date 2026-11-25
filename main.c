@@ -8,6 +8,7 @@
  **************************************************************/
 
 #include <stdio.h>
+
 #include "manager.h"
 
 /**************************************************************
@@ -21,15 +22,25 @@
 int main(int argc, char *argv[]) {
     if (!validate_arguments(argc, argv)) {
         return 1;
-    };
+    }
 
-    if (!make_rfile(arg[1])) {
-        return 1;
-    };
-
-    if(!process_quests(argv[1])) {
+    char *rfilename = make_rfile(argv[1]);
+    if (rfile == NULL) {
         return 1;
     }
 
+    FILE *rfile = fopen(rfilename);
+    FILE *mfile = fopen(argv[1]);
+    FILE *mfile = fopen(argv[2]);
+    FILE *pfile = fopen(argv[3]);
+
+    if(!process_quests(qfile, mfile, pfile, rfile)) {
+        return 1;
+    }
+
+    fclose(qfile)
+    fclose(rfile);
+    fclose(mfile);
+    fclose(pfile);
     return 0;
 }

@@ -7,7 +7,8 @@
  **************************************************************/
 
 #include <string.h>
-#include "graph.h"
+
+#include "data.h"
 #include "load.h"
 
 /**************************************************************
@@ -65,27 +66,21 @@ char *make_rfile(const char *qfilename) {
  * @param qfile 
  * @return int 
  **************************************************************/
-int process_quests(const char *qfile) {
+int process_quests(FILE *qfile, FILE *mfile, FILE *pfile, FILE *rfile) {
     int number;
     int arg;
 
-    if (!fopen(qfile)) {
-        return 0;
-    }
+    Clusters *c = initialize_clusters(mfile);
+    load_clusters(mfile);
 
-    Graph g* = load_map(g);
+    Dots *d = initialize_dots(mfile);
+    load_map(mfile)
 
-    if(g == NULL) {
-        return 0;
-    }
-
-    if (!load_position(g)) {
+    if (!load_position(pfile, c)) {
         return 0;
     }
 
     while (fscanf(qfile, "Task %d", &number) == 1) {
-        arg = 0;
-
         if (number != 1 && number != 2) {
             if (fscanf(qfile, "%d", &arg) != 1) {
                 break;
@@ -93,8 +88,8 @@ int process_quests(const char *qfile) {
         }
 
         const TaskEntry *task = find_task(number);
+        if (!tasks[number].(c, d, arg, rfile))
     }
 
-    fclose(qfile);
     return 1;
 }
