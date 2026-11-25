@@ -14,22 +14,30 @@
 #include "data.h"
 #include "manager.h"
 #include "tasks.h"
+#include "lists.h"
 
-int Task1(Clusters *c, Dots **d, int *arg, FILE *rfile)
-{
-    // Quest 1 implementation
+int Task1(Clusters *c, Dots **d, int *arg, FILE *rfile) {
+    (void)arg;
+    (void)d;
+
+    if (fprintf(rfile, "Task1 %d\n\n", c->n_clusters) < 0) {
+        return 1;
+    }
+
     return 0;
 }
 
-int Task2(Clusters *c, Dots **d, int *arg, FILE *rfile)
-{
-    // Quest 2 implementation
+int Task2(Clusters *c, Dots **d, int *arg, FILE *rfile) {
+    (void)arg;
+
+    create_cluster_vector(c, d);
+
     return 0;
 }
 
 int Task3(Clusters *c, Dots **d, int *arg, FILE *rfile)
 {
-    // Quest 3 implementation
+
     return 0;
 }
 
