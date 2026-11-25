@@ -6,10 +6,14 @@
  * @date 2026-11-18
  **************************************************************/
 
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "data.h"
 #include "load.h"
+#include "manager.h"
+#include "tasks.h"
 
 /**************************************************************
  * @brief Validates the command line arguments.
@@ -47,17 +51,20 @@ int validate_arguments(int argc, char *argv[]) {
  * @param qfilename 
  * @return char* 
  **************************************************************/
-char *make_rfile(const char *qfilename) {
+FILE *make_rfile(char *qfilename) {
     size_t len = strlen(qfilename);
 
     char *rfilename = malloc(len + sizeof ".results");
-
     if (rfilename == NULL) {
         return NULL;
     }
 
-    memcpy(qfilename, rfilename, len);
-    return rfilename;
+    memcpy(rfilename, qfilename, len);
+    memcpy(rfilename, ".results", sizeof ".results");
+    FILE *rfile = fopen(rfilename, "w+");
+
+    free(rfilename);
+    return rfile;
 }
 
 /**************************************************************
@@ -67,19 +74,26 @@ char *make_rfile(const char *qfilename) {
  * @return int 
  **************************************************************/
 int process_quests(FILE *qfile, FILE *mfile, FILE *pfile, FILE *rfile) {
-    int number;
-    int arg;
+    const Quest tasks[] = {Task1, Task2, Task3, Task4};
 
-    Clusters *c = initialize_clusters(mfile);
-    load_clusters(mfile);
-
-    Dots *d = initialize_dots(mfile);
-    load_map(mfile)
-
-    if (!load_position(pfile, c)) {
-        return 0;
+    Clusters *c = initialize_clusters();
+    if (!load_clusters(c, mfile)) {
+        return 1;
+    }
+    
+    Dots **d = initialize_dots(c);
+    if (!load_dots(c, d, mfile)) {
+        return 1;
     }
 
+    if(!load_map(c, d, mfile)) {
+        return 1;
+    }
+    if(!load_position(c, d, pfile)) {
+        return 1;
+    }
+
+    int number, arg;
     while (fscanf(qfile, "Task %d", &number) == 1) {
         if (number != 1 && number != 2) {
             if (fscanf(qfile, "%d", &arg) != 1) {
@@ -87,9 +101,11 @@ int process_quests(FILE *qfile, FILE *mfile, FILE *pfile, FILE *rfile) {
             }
         }
 
-        const TaskEntry *task = find_task(number);
-        if (!tasks[number].(c, d, arg, rfile))
+        if (!tasks[number](c, d, &arg, rfile)) {
+            return 1;
+        }
     }
 
-    return 1;
+    fclose(qfile);
+    return 0;
 }

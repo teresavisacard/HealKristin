@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+#include "data.h"
 #include "manager.h"
 
 /**************************************************************
@@ -22,24 +23,19 @@
 int main(int argc, char *argv[]) {
     if (!validate_arguments(argc, argv)) {
         return 1;
-    }
+    };
 
-    char *rfilename = make_rfile(argv[1]);
-    if (rfile == NULL) {
-        return 1;
-    }
-
-    FILE *rfile = fopen(rfilename);
-    FILE *mfile = fopen(argv[1]);
-    FILE *mfile = fopen(argv[2]);
-    FILE *pfile = fopen(argv[3]);
+    FILE *rfile = make_rfile(argv[1]);
+    FILE *qfile = fopen(argv[1], "r");
+    FILE *mfile = fopen(argv[2], "r");
+    FILE *pfile = fopen(argv[3], "r");
 
     if(!process_quests(qfile, mfile, pfile, rfile)) {
         return 1;
     }
 
-    fclose(qfile)
     fclose(rfile);
+    fclose(qfile);
     fclose(mfile);
     fclose(pfile);
     return 0;
