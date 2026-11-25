@@ -7,17 +7,18 @@
  **************************************************************/
 
 #include <stdio.h>
-#include "graph.h"
+
+#include "data.h"
 
 /**************************************************************
  * @brief Make each city its own cluster, setting its size to 1.
  * 
  * @param c
- * @param v 
+ * @param v
  **************************************************************/
-void make_set(Graph *c, int a) {
-    g->id[a] = a;
-    g->sz[a] = 1;
+void make_set(Dots **d, int a) {
+    d[a]->id = a;
+    d[a]->sz = 1;
 }
 
 /**************************************************************
@@ -27,9 +28,9 @@ void make_set(Graph *c, int a) {
  * @param a 
  * @return int - root of city
  **************************************************************/
-int find_root(Clusters *c, int a) {
+int find_root(Dots **d, int a) {
     int i;
-    for (i = a; i != id[i]; i = id[i]);
+    for (i = a; i != d[i]->id; i = d[i]->id);
 
     return i;
 }
@@ -42,15 +43,15 @@ int find_root(Clusters *c, int a) {
  * @param b 
  * @return int 
  **************************************************************/
-int weighted_union(Clusters *c, int a, int b) {
+void weighted_union(Clusters *c, Dots **d, int a, int b) {
     c->n_cities--;
     
-    if (sz[a] < sz[b]) {
-        id[a] = b;
-        sz[b] += sz[a];
+    if (d[a]->sz < d[b]->sz) {
+        d[a]->id = b;
+        d[b]->sz += d[a]->sz;
     } else {
-        id[b] = a;
-        sz[a] += sz[b];
+        d[b]->id = a;
+        d[a]->sz += d[b]->sz;
     }
 }
 
@@ -60,12 +61,12 @@ int weighted_union(Clusters *c, int a, int b) {
  * @param c 
  * @param a 
  **************************************************************/
-void compress(Clusters *c, int a, int ra) {
-    int i, c;
+void compress(Dots **d, int a, int ra) {
+    int i, j;
 
-    for (i = a; i != id[i]; i = c) {
-        c = id[i];
-        id[i] = ra;
+    for (i = a; i != d[i]->id; i = j) {
+        j = d[i]->id;
+        d[i]->id = ra;
     }
 }
 
@@ -75,24 +76,23 @@ void compress(Clusters *c, int a, int ra) {
  * @param c 
  * @param gfile 
  **************************************************************/
-void compressed_weighted_quick_union(Clusters *c, FILE *gfile) {
-
-
-    for (int i = 0; i < n_cities; i++) {
-      make_set(c, i);
+void compressed_weighted_quick_union(Clusters *c, Dots **d, FILE *mfile) {
+    int a, b;
+    for (int i = 0; i < c->n_cities; i++) {
+      make_set(d, i);
     }
 
-    while (fscanf(fp, "%d %d", &a, &b) == 2) {
-        int ra = find_root(c, a);
-        int rb = find_root(c, b);
+    while (fscanf(mfile, "%d %d", &a, &b) == 2) {
+        int ra = find_root(d, a);
+        int rb = find_root(d, b);
     
         if (ra == rb) {
             continue;
         }
 
-        weighted_union(c, a, b);
+        weighted_union(c, d, a, b);
 
-        compress(c, a, ra);
-        compress(c, b, rb);
+        compress(d, a, ra);
+        compress(d, b, rb);
     }
 }

@@ -8,6 +8,8 @@
  **************************************************************/
 
 #include <stdio.h>
+
+#include "data.h"
 #include "manager.h"
 
 /**************************************************************
@@ -23,13 +25,18 @@ int main(int argc, char *argv[]) {
         return 1;
     };
 
-    if (!make_rfile(arg[1])) {
-        return 1;
-    };
+    FILE *rfile = make_rfile(argv[1]);
+    FILE *qfile = fopen(argv[1], "r");
+    FILE *mfile = fopen(argv[2], "r");
+    FILE *pfile = fopen(argv[3], "r");
 
-    if(!process_quests(argv[1])) {
+    if(!process_quests(qfile, mfile, pfile, rfile)) {
         return 1;
     }
 
+    fclose(rfile);
+    fclose(qfile);
+    fclose(mfile);
+    fclose(pfile);
     return 0;
 }
