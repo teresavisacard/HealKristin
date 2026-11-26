@@ -21,7 +21,7 @@
  *              1, if unsuccessful.
  **************************************************************/
 int main(int argc, char *argv[]) {
-    if (!validate_arguments(argc, argv)) {
+    if (validate_arguments(argc, argv)) {
         return 1;
     };
 
@@ -33,10 +33,6 @@ int main(int argc, char *argv[]) {
     if(!process_quests(qfile, mfile, pfile, rfile)) {
         return 1;
     }
-
-    fclose(rfile);
-    fclose(qfile);
-    fclose(mfile);
-    fclose(pfile);
+    
     return 0;
 }

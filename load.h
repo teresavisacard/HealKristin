@@ -17,7 +17,6 @@ int load_clusters(Clusters *c, FILE *mfile);
 Dots **initialize_dots(Clusters *c);
 int load_dots(Clusters *c, Dots **d, FILE *mfile);
 
-int load_map(Clusters *c, Dots **d, FILE *mfile);
 int load_position(Clusters *c, Dots **d, FILE *pfile);
 
 #endif

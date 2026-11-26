@@ -1,24 +1,18 @@
+
 CC      = gcc
-CFLAGS  = -Wall -Wextra -std=c99 -O3
+CFLAGS  = -Wall -Wextra -std=c99 -g -O3
 TARGET  = healkristin
 
-SRCS = main.c load.c manager.c connectivity.c tasks.c
+SRCS = main.c load.c manager.c connectivity.c tasks.c lists.c
 OBJS = $(SRCS:.c=.o)
-DEPS = $(OBJS:.o=.d)
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-CC     = gcc
-CFLAGS = -Wall -Wextra -std=c99 -O3
-SRCS   = main.c load.c manager.c connectivity.c tasks.c
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-healkristin: $(SRCS) data.h load.h manager.h tasks.h
-	$(CC) $(CFLAGS) $(SRCS) -o healkristin
-
-valgrind: $(SRCS) data.h load.h manager.h tasks.h
-	$(CC) -Wall -Wextra -std=c99 -g -O0 $(SRCS) -o healkristin_debug
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f healkristin
+	rm -f $(TARGET) $(OBJS)

@@ -11,6 +11,8 @@
 #ifndef CONNECTIVITY_H
 #define CONNECTIVITY_H
 
-void compressed_weighted_quick_union(Clusters *c, Dots **d, FILE *mfile);
+void make_set(Dots **d, int a);
+void compressed_weighted_quick_union(Clusters *c, Dots **d, int a, int b);
+int find_root(Dots **d, int a);
 
 #endif

@@ -1,0 +1,31 @@
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug healkristin",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/healkristin",
+            "args": [
+                "TeenOnes-01.quests",
+                "TeenOnes-01.map",
+                "TeenOnes-01.position"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "build healkristin",
+            "setupCommands": [
+                {
+                    "description": "Enable GDB pretty printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

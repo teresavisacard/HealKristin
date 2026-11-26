@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "data.h"
+#include "connectivity.h"
 #include "lists.h"
 
 /**************************************************************
@@ -38,24 +39,20 @@ Node *create_node(int city) {
  * @param city 
  * @return int 
  **************************************************************/
-int insert_end(Node **head, int city) {
+int insert_end(Node **unions, Node **tails, int city) {
     Node *n = create_node(city);
     if (n == NULL) {
-        return 1;
+        return 0;
     }
 
-    if (*head == NULL) {
-        *head = n;
-        return 1;
+    if (*tails == NULL) {
+        *unions = n;
+    } else {
+        (*tails)->next = n;
     }
 
-    Node *current = *head;
-    while (current->next != NULL) {
-        current = current->next;
-    }
-
-    current->next = n;
-    return 0;
+    *tails = n;
+    return 1;
 }
 
 /**************************************************************
@@ -83,18 +80,22 @@ Vector *create_vector(Clusters *c, Dots **d) {
         return NULL;
     }
 
-    int index = 0;
-    for (int i = 1; i <= c->n_cities; i++) {
-        if (find_root(d, i) == i) {
-            position[i] = index++;
-        }
+    v->tails = calloc(c->n_clusters, sizeof(Node *));
+    if (v->tails == NULL) {
+        free(position);
+        free_cluster_vector(c, v);
+        return NULL;
     }
 
+    int next = 1;
     for (int i = 1; i <= c->n_cities; i++) {
         int r = find_root(d, i);
-        int p = position[r];
+        if (position[r] == 0) {
+            position[r] = next++;
+        }
 
-        if (!insert_end(&v->unions[p], i)) {
+        int p = position[r] - 1;
+        if (!insert_end(&v->unions[p], &v->tails[p], i)) {
             free(position);
             free_cluster_vector(c, v);
             return NULL;
@@ -102,6 +103,7 @@ Vector *create_vector(Clusters *c, Dots **d) {
     }
 
     free(position);
+    return v;
 }
 
 /**************************************************************
@@ -110,20 +112,20 @@ Vector *create_vector(Clusters *c, Dots **d) {
  * @param c 
  * @param v 
  **************************************************************/
-void print_clusters(Clusters *c, Vector *v) {
-    for (int i = 0; i < c->n_clusters; i++) {
-        printf("Cluster:");
-        Node *current = v->unions[i];
+void print_clusters(Clusters *c, Vector *v, FILE *rfile) {
+    fprintf(rfile, "\n");
 
-        while (current != NULL) {
-            printf(" %d", current->city);
-            current = current->next;
+    for (int i = 0; i < c->n_clusters; i++) {
+        fprintf(rfile, "Cluster:");
+
+        for (Node *cur = v->unions[i]; cur != NULL; cur = cur->next) {
+            fprintf(rfile, " %d", cur->city);
         }
 
-        printf("\n");
+        fprintf(rfile, "\n");
     }
 
-    printf("\n");
+    fprintf(rfile, "\n");
 }
 
 /**************************************************************

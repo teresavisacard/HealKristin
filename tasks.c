@@ -15,7 +15,7 @@
 #include "manager.h"
 #include "tasks.h"
 #include "lists.h"
-
+/*
 int Task1(Clusters *c, Dots **d, int *arg, FILE *rfile) {
     (void)arg;
     (void)d;
@@ -26,12 +26,21 @@ int Task1(Clusters *c, Dots **d, int *arg, FILE *rfile) {
 
     return 0;
 }
+    */
+
+int Task1(Clusters *c, Dots **d, int *arg, FILE *rfile) {
+    (void)arg;
+    (void)d;
+
+    fprintf(rfile, "Task1 %d\n\n", c->n_clusters);
+    return 0;
+}
 
 int Task2(Clusters *c, Dots **d, int *arg, FILE *rfile) {
     (void)arg;
-
-    create_cluster_vector(c, d);
-
+    fprintf(rfile, "Task2 %d", c->n_clusters);
+    Vector *v = create_vector(c, d);
+    print_clusters(c, v, rfile);
     return 0;
 }
 
